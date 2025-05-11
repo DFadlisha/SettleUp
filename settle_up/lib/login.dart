@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'register.dart';
+import 'home.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -354,20 +356,16 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     // Proceed with login
+    // ignore: avoid_print
     print('Login successful');
-    // Navigate to home screen or show success message
+
+    // Navigate to home page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
   }
 }
 
-// Add this to ensure a minimal compile target
-// The RegisterPage is referenced in this file but defined in a separate file
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // This is just a placeholder to avoid compile errors when referenced
-    // The actual implementation is in register_page.dart
-    return const Scaffold();
-  }
-}
+// Instead of creating a placeholder class, we'll import the actual register page
+// and use it directly in the navigation code.
