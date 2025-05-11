@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'login.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -10,13 +11,14 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  
+
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _mobileNumberController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -70,7 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           _buildInputField(
                             label: 'Full Name',
                             controller: _fullNameController,
-                            hintText: 'example@example.com', // This seems wrong in the design
+                            hintText:
+                                'example@example.com', // This seems wrong in the design
                           ),
                           _buildInputField(
                             label: 'Email',
@@ -107,7 +110,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             isVisible: _isConfirmPasswordVisible,
                             toggleVisibility: () {
                               setState(() {
-                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                _isConfirmPasswordVisible =
+                                    !_isConfirmPasswordVisible;
                               });
                             },
                           ),
@@ -120,10 +124,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         const Text(
                           'By continuing, you agree to ',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black87,
-                          ),
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
                         ),
                         TextButton(
                           onPressed: () {},
@@ -143,10 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const Text(
                           ' and ',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black87,
-                          ),
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
                         ),
                         TextButton(
                           onPressed: () {},
@@ -166,10 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const Text(
                           '.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black87,
-                          ),
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
                         ),
                       ],
                     ),
@@ -198,9 +193,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         const Text(
                           'Already have an account? ',
-                          style: TextStyle(
-                            color: Colors.black54,
-                          ),
+                          style: TextStyle(color: Colors.black54),
                         ),
                         TextButton(
                           onPressed: () {
@@ -275,7 +268,10 @@ class _RegisterPageState extends State<RegisterPage> {
               hintText: hintText,
               hintStyle: const TextStyle(color: Colors.black38),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
           ),
         ),
@@ -314,7 +310,10 @@ class _RegisterPageState extends State<RegisterPage> {
             obscureText: !isVisible,
             decoration: InputDecoration(
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
                   isVisible ? Icons.visibility : Icons.visibility_off,
@@ -338,7 +337,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
     if (picked != null) {
       setState(() {
-        _dateOfBirthController.text = "${picked.day.toString().padLeft(2, '0')} / "
+        _dateOfBirthController.text =
+            "${picked.day.toString().padLeft(2, '0')} / "
             "${picked.month.toString().padLeft(2, '0')} / "
             "${picked.year}";
       });
@@ -353,20 +353,21 @@ class _RegisterPageState extends State<RegisterPage> {
         _dateOfBirthController.text.isEmpty ||
         _passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
     // Proceed with registration
+    // ignore: avoid_print
     print('Registration successful');
     // Navigate to the next screen or show success message
   }
