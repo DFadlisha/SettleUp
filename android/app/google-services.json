@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1030394026845",
+    "project_id": "settleup-24203",
+    "storage_bucket": "settleup-24203.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030394026845:android:8a447cc3547216d432e6b4",
+        "android_client_info": {
+          "package_name": "com.example.settleup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEpS1yo7uKG7LDqRE0rMocusXK6paM1h4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
