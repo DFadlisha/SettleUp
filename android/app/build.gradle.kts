@@ -7,6 +7,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+
 dependencies {
 
   // Import the Firebase BoM

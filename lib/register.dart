@@ -72,8 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           _buildInputField(
                             label: 'Full Name',
                             controller: _fullNameController,
-                            hintText:
-                                'example@example.com', // This seems wrong in the design
+                            hintText: 'Enter your full name',
                           ),
                           _buildInputField(
                             label: 'Email',
@@ -264,8 +263,6 @@ class _RegisterPageState extends State<RegisterPage> {
             keyboardType: keyboardType,
             readOnly: readOnly,
             onTap: onTap,
-            enableInteractiveSelection: true,
-            autofocus: false,
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: const TextStyle(color: Colors.black38),
@@ -310,9 +307,6 @@ class _RegisterPageState extends State<RegisterPage> {
           child: TextField(
             controller: controller,
             obscureText: !isVisible,
-            keyboardType: TextInputType.visiblePassword,
-            enableSuggestions: false,
-            autocorrect: false,
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -371,12 +365,74 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // Proceed with registration
-    // ignore: avoid_print
-    print('Registration successful');
-    // Navigate to the next screen or show success message
+    // Show registration successful dialog
+    _showRegistrationSuccessDialog();
+  }
+
+  void _showRegistrationSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF0F3F33),
+                  size: 70,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Registration Successful!',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F3F33),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Your account has been created successfully.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    // Close dialog and navigate to login page
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0F3F33),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(200, 45),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Go to Login',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
-
-// Instead of creating a placeholder class, we'll import the actual login page
-// and use it directly in the navigation code.
