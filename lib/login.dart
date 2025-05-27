@@ -7,10 +7,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -28,11 +28,15 @@ class _LoginPageState extends State<LoginPage> {
 
       await Future.delayed(const Duration(seconds: 1));
 
-      bool isAuthenticated = mockUsers.any((user) =>
-          user["email"] == _emailController.text &&
-          user["password"] == _passwordController.text);
+      bool isAuthenticated = mockUsers.any(
+        (user) =>
+            user["email"] == _emailController.text &&
+            user["password"] == _passwordController.text,
+      );
 
       setState(() => _isLoading = false);
+
+      if (!mounted) return;
 
       if (isAuthenticated) {
         Navigator.pushReplacement(
@@ -81,7 +85,9 @@ class _LoginPageState extends State<LoginPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
-                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    } else if (!RegExp(
+                      r'^[^@]+@[^@]+\.[^@]+',
+                    ).hasMatch(value)) {
                       return 'Enter a valid email address';
                     }
                     return null;
@@ -96,7 +102,10 @@ class _LoginPageState extends State<LoginPage> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off),
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
                       },
@@ -135,9 +144,15 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: const Color(0xFF27374D),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Login", style: TextStyle(color: Colors.white)),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              "Login",
+                              style: TextStyle(color: Colors.white),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -172,7 +187,8 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const RegisterPage()),
+                            builder: (context) => const RegisterPage(),
+                          ),
                         );
                       },
                       child: const Text("Sign Up"),
