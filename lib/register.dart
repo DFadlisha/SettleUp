@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,9 +10,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _mobileNumberController = TextEditingController();
@@ -20,332 +18,59 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  @override
-  void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _mobileNumberController.dispose();
-    _dateOfBirthController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F3F33),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F7F0),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInputField(
-                            label: 'Full Name',
-                            controller: _fullNameController,
-                            hintText: 'Enter your full name',
-                          ),
-                          _buildInputField(
-                            label: 'Email',
-                            controller: _emailController,
-                            hintText: 'example@example.com',
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          _buildInputField(
-                            label: 'Mobile Number',
-                            controller: _mobileNumberController,
-                            hintText: '+ 123 456 789',
-                            keyboardType: TextInputType.phone,
-                          ),
-                          _buildInputField(
-                            label: 'Date Of Birth',
-                            controller: _dateOfBirthController,
-                            hintText: 'DD / MM / YYY',
-                            onTap: () => _selectDate(context),
-                            readOnly: true,
-                          ),
-                          _buildPasswordField(
-                            label: 'Password',
-                            controller: _passwordController,
-                            isVisible: _isPasswordVisible,
-                            toggleVisibility: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
-                          _buildPasswordField(
-                            label: 'Confirm Password',
-                            controller: _confirmPasswordController,
-                            isVisible: _isConfirmPasswordVisible,
-                            toggleVisibility: () {
-                              setState(() {
-                                _isConfirmPasswordVisible =
-                                    !_isConfirmPasswordVisible;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'By continuing, you agree to ',
-                          style: TextStyle(fontSize: 12, color: Colors.black87),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            minimumSize: Size.zero,
-                            padding: EdgeInsets.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Terms of Use',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          ' and ',
-                          style: TextStyle(fontSize: 12, color: Colors.black87),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            minimumSize: Size.zero,
-                            padding: EdgeInsets.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Privacy Policy',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          '.',
-                          style: TextStyle(fontSize: 12, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () => _signUp(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F3F33),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(200, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Already have an account? ',
-                          style: TextStyle(color: Colors.black54),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Navigate to login page
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            minimumSize: Size.zero,
-                            padding: EdgeInsets.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              color: Color(0xFF0F3F33),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-    TextInputType keyboardType = TextInputType.text,
-    bool readOnly = false,
-    VoidCallback? onTap,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, bottom: 8),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFADFBC),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            readOnly: readOnly,
-            onTap: onTap,
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: const TextStyle(color: Colors.black38),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required TextEditingController controller,
-    required bool isVisible,
-    required VoidCallback toggleVisibility,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 16, bottom: 8),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFADFBC),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: TextField(
-            controller: controller,
-            obscureText: !isVisible,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  isVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.black54,
-                ),
-                onPressed: toggleVisibility,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  DateTime? _selectedDate;
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
+
+    if (pickedDate != null) {
       setState(() {
+        _selectedDate = pickedDate;
         _dateOfBirthController.text =
-            "${picked.day.toString().padLeft(2, '0')} / "
-            "${picked.month.toString().padLeft(2, '0')} / "
-            "${picked.year}";
+            DateFormat('dd / MM / yyyy').format(_selectedDate!);
       });
     }
   }
 
-  void _signUp() {
-    // Implement sign up logic
+  Future<void> _saveUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('fullName', _fullNameController.text.trim());
+    await prefs.setString('email', _emailController.text.trim());
+  }
+
+  bool _isValidPhoneNumber(String phone) {
+    final phoneRegExp = RegExp(r'^\+?\d{7,15}$');
+    return phoneRegExp.hasMatch(phone);
+  }
+
+  bool _isValidDate(String date) {
+    try {
+      final parts = date.split(' / ');
+      if (parts.length != 3) return false;
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+      final dob = DateTime(year, month, day);
+      return dob.isBefore(DateTime.now());
+    } catch (_) {
+      return false;
+    }
+  }
+
+  bool _isPasswordStrong(String password) {
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasDigits = password.contains(RegExp(r'\d'));
+    final hasLowercase = password.contains(RegExp(r'[a-z]'));
+    final hasMinLength = password.length >= 8;
+    return hasDigits && hasUppercase && hasLowercase && hasMinLength;
+  }
+
+  void _signUp() async {
     if (_fullNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _mobileNumberController.text.isEmpty ||
@@ -358,6 +83,20 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
+    if (!_isValidPhoneNumber(_mobileNumberController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number')),
+      );
+      return;
+    }
+
+    if (!_isValidDate(_dateOfBirthController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid date of birth')),
+      );
+      return;
+    }
+
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(
         context,
@@ -365,74 +104,96 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // Show registration successful dialog
+    if (!_isPasswordStrong(_passwordController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Password must be at least 8 characters long, include uppercase, lowercase letters, and numbers.'),
+        ),
+      );
+      return;
+    }
+
+    // Save user info locally
+    await _saveUserInfo();
+
     _showRegistrationSuccessDialog();
   }
 
   void _showRegistrationSuccessDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Color(0xFF0F3F33),
-                  size: 70,
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Registration Successful!',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F3F33),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Your account has been created successfully.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    // Close dialog and navigate to login page
-                    Navigator.of(context).pop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F3F33),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(200, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: const Text(
-                    'Go to Login',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
+        return AlertDialog(
+          title: const Text('Registration Successful'),
+          content: const Text('Your account has been created successfully.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
             ),
-          ),
+          ],
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _fullNameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+            ),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            TextField(
+              controller: _mobileNumberController,
+              decoration: const InputDecoration(labelText: 'Mobile Number'),
+              keyboardType: TextInputType.phone,
+            ),
+            TextField(
+              controller: _dateOfBirthController,
+              decoration: InputDecoration(
+                labelText: 'Date of Birth',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () => _selectDate(context),
+                ),
+              ),
+              readOnly: true,
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            TextField(
+              controller: _confirmPasswordController,
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 24.0),
+            ElevatedButton(
+              onPressed: _signUp,
+              child: const Text('Sign Up'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

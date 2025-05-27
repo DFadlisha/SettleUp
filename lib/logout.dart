@@ -1,38 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Added for session clearing
 
 class LogoutPage extends StatefulWidget {
-  const LogoutPage({
-    super.key,
-  }); // Use super.key to resolve use_super_parameters
+  const LogoutPage({super.key});
 
   @override
-  State<LogoutPage> createState() => _LogoutPageState(); // Changed to explicitly return State<LogoutPage>
+  State<LogoutPage> createState() => _LogoutPageState();
 }
 
 class _LogoutPageState extends State<LogoutPage> {
   bool _isLoading = false;
 
   Future<void> _handleLogout() async {
-    // Set loading state
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // Actual logout logic implementation
-      // Replace with your specific authentication logout mechanism
       await _performLogout();
 
-      // Navigate only if the widget is still mounted
       if (!mounted) return;
 
+      // Show success feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logged out successfully')),
+      );
+
+      // Navigate to login
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (error) {
-      // Show error dialog only if widget is mounted
       if (!mounted) return;
       _showErrorDialog(error.toString());
     } finally {
-      // Ensure loading state is reset only if widget is mounted
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -42,24 +41,27 @@ class _LogoutPageState extends State<LogoutPage> {
   }
 
   Future<void> _performLogout() async {
-    // Simulating logout process
+    // Clear stored session/token
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    // Simulate delay
     await Future.delayed(const Duration(seconds: 2));
   }
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: const Text('Logout Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Okay'),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: const Text('Logout Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Okay'),
           ),
+        ],
+      ),
     );
   }
 
@@ -71,10 +73,7 @@ class _LogoutPageState extends State<LogoutPage> {
         title: const Text('Logout'),
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: Container(), // Removed back button to avoid navigation
       ),
       body: Center(
         child: Padding(
@@ -83,11 +82,9 @@ class _LogoutPageState extends State<LogoutPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logout Illustration
               Icon(Icons.exit_to_app, size: 100, color: Colors.red.shade300),
               const SizedBox(height: 30),
 
-              // Logout Confirmation Text
               Text(
                 'Are you sure you want to logout?',
                 style: TextStyle(
@@ -99,7 +96,6 @@ class _LogoutPageState extends State<LogoutPage> {
               ),
               const SizedBox(height: 20),
 
-              // Logout Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _handleLogout,
                 style: ElevatedButton.styleFrom(
@@ -110,23 +106,20 @@ class _LogoutPageState extends State<LogoutPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child:
-                    _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                          'Logout',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
               ),
               const SizedBox(height: 15),
 
-              // Cancel Button
               TextButton(
-                onPressed:
-                    _isLoading ? null : () => Navigator.of(context).pop(),
+                onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                 child: Text(
                   'Cancel',
                   style: TextStyle(color: Colors.grey[600], fontSize: 16),
