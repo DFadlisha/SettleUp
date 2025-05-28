@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-//import 'package:settleup/firebase_auth.dart';
-//import 'authentication/auth.dart';
-//import 'package:flutter/services.dart';
-import 'logout.dart'; // Import the logout page
+import '../authentication/logout.dart';
+import 'profile.dart';
+import 'group_members.dart';
+import 'settlement_payment.dart';
+import 'split_calculation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,12 +35,43 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
+
     setState(() {
       _selectedIndex = index;
     });
+
+    switch (index) {
+      case 0:
+        // Already on HomePage
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SplitCalculationPage()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SettlementPaymentPage()),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const GroupMembersPage()),
+        );
+        break;
+      case 4:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        );
+        break;
+    }
   }
 
-  // Navigate to logout page
   void _navigateToLogout() {
     Navigator.push(
       context,
@@ -118,8 +150,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withAlpha((0.2 * 255).toInt()),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -128,17 +159,15 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(width: 8), // Add spacing between icons
+                  const SizedBox(width: 8),
                   Container(
                     decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withAlpha((0.2 * 255).toInt()),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.logout),
-                      onPressed:
-                          _navigateToLogout, // Call function to navigate to logout page
+                      onPressed: _navigateToLogout,
                       color: Colors.black,
                     ),
                   ),
@@ -154,13 +183,10 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      children: [
-                        const Icon(
-                          Icons.account_balance_wallet_outlined,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        const Text(
+                      children: const [
+                        Icon(Icons.account_balance_wallet_outlined, size: 16),
+                        SizedBox(width: 4),
+                        Text(
                           'Total Balance',
                           style: TextStyle(fontSize: 14, color: Colors.black87),
                         ),
@@ -183,25 +209,18 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: const [
                       Row(
                         children: [
-                          const Icon(
-                            Icons.trending_down,
-                            size: 16,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(width: 4),
-                          const Text(
+                          Icon(Icons.trending_down, size: 16, color: Colors.red),
+                          SizedBox(width: 4),
+                          Text(
                             'Total Expense',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
+                            style: TextStyle(fontSize: 14, color: Colors.black87),
                           ),
                         ],
                       ),
-                      const Text(
+                      Text(
                         '-\$1,187.40',
                         style: TextStyle(
                           fontSize: 20,
@@ -225,8 +244,7 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     height: 8,
                     decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withAlpha((0.3 * 255).toInt()),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -259,10 +277,10 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: [
-                      const Icon(Icons.check_circle_outline, size: 16),
-                      const SizedBox(width: 4),
-                      const Text(
+                    children: const [
+                      Icon(Icons.check_circle_outline, size: 16),
+                      SizedBox(width: 4),
+                      Text(
                         '30% Of Your Expenses, Looks Good.',
                         style: TextStyle(fontSize: 12, color: Colors.black87),
                       ),
@@ -299,8 +317,8 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFC18E),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFC18E),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -333,10 +351,10 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    children: [
-                      const Icon(Icons.account_balance_wallet, size: 16),
-                      const SizedBox(width: 4),
-                      const Text(
+                    children: const [
+                      Icon(Icons.account_balance_wallet, size: 16),
+                      SizedBox(width: 4),
+                      Text(
                         'Revenue Last Week',
                         style: TextStyle(fontSize: 12, color: Colors.black87),
                       ),
@@ -352,21 +370,21 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 8),
                   Row(
-                    children: [
-                      const Icon(Icons.restaurant, size: 16),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Food Last Week',
+                    children: const [
+                      Icon(Icons.restaurant, size: 16),
+                      SizedBox(width: 4),
+                      Text(
+                        'Food & Drinks',
                         style: TextStyle(fontSize: 12, color: Colors.black87),
                       ),
                     ],
                   ),
                   const Text(
-                    '-\$100.00',
+                    '\$1,200.00',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -380,98 +398,109 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildPeriodToggle() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildPeriodButton('Daily'),
-        const SizedBox(width: 8),
         _buildPeriodButton('Weekly'),
-        const SizedBox(width: 8),
         _buildPeriodButton('Monthly'),
+        _buildPeriodButton('Yearly'),
       ],
     );
   }
 
-  Widget _buildPeriodButton(String text) {
-    final isSelected = _selectedPeriod == text;
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _selectedPeriod = text;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFFC18E) : const Color(0xFFFFE0C9),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.black87 : Colors.black54,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  Widget _buildPeriodButton(String period) {
+    final isSelected = _selectedPeriod == period;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: isSelected ? Colors.white : Colors.black,
+          backgroundColor: isSelected ? const Color(0xFFFFA14E) : Colors.white,
+          side: BorderSide(
+            color: isSelected ? const Color(0xFFFFA14E) : Colors.black,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
+        onPressed: () {
+          setState(() {
+            _selectedPeriod = period;
+          });
+        },
+        child: Text(period),
       ),
     );
   }
 
   Widget _buildTransactionsList() {
     return ListView(
+      physics: const BouncingScrollPhysics(),
       children: [
-        _buildTransactionItem(
-          'Salary',
-          '18:27 - April 30',
-          'Monthly',
-          '\$4,000.00',
-          Colors.pink.shade200,
-          Icons.account_balance_wallet,
-          isExpense: false,
+        _buildTransactionCard(
+          icon: Icons.fastfood_outlined,
+          title: 'Food',
+          amount: '\$500',
+          date: 'Today',
+          color: const Color(0xFFFD4F56),
         ),
-        _buildTransactionItem(
-          'Groceries',
-          '17:00 - April 24',
-          'Pantry',
-          '-\$100.00',
-          Colors.orange.shade200,
-          Icons.shopping_bag_outlined,
-          isExpense: true,
+        _buildTransactionCard(
+          icon: Icons.local_gas_station,
+          title: 'Fuel',
+          amount: '\$300',
+          date: 'Yesterday',
+          color: const Color(0xFFFFA14E),
         ),
-        _buildTransactionItem(
-          'Rent',
-          '8:30 - April 15',
-          'Rent',
-          '-\$674.40',
-          Colors.brown.shade300,
-          Icons.house_outlined,
-          isExpense: true,
+        _buildTransactionCard(
+          icon: Icons.videogame_asset_outlined,
+          title: 'Entertainment',
+          amount: '\$200',
+          date: 'Yesterday',
+          color: const Color(0xFF0F3F33),
+        ),
+        _buildTransactionCard(
+          icon: Icons.tv_outlined,
+          title: 'Subscription',
+          amount: '\$100',
+          date: 'Two days ago',
+          color: const Color(0xFF0F3F33),
+        ),
+        _buildTransactionCard(
+          icon: Icons.shopping_bag_outlined,
+          title: 'Shopping',
+          amount: '\$100',
+          date: 'Two days ago',
+          color: const Color(0xFF0F3F33),
         ),
       ],
     );
   }
 
-  Widget _buildTransactionItem(
-    String title,
-    String date,
-    String category,
-    String amount,
-    Color iconBgColor,
-    IconData icon, {
-    required bool isExpense,
+  Widget _buildTransactionCard({
+    required IconData icon,
+    required String title,
+    required String amount,
+    required String date,
+    required Color color,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(12),
+              color: color,
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: Colors.white),
+            padding: const EdgeInsets.all(12),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -479,33 +508,25 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   title,
                   style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    color: Colors.black,
                   ),
                 ),
                 Text(
                   date,
-                  style: const TextStyle(color: Colors.black54, fontSize: 12),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                category,
-                style: const TextStyle(color: Colors.black54, fontSize: 12),
-              ),
-              Text(
-                amount,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: isExpense ? Colors.red : Colors.black,
-                ),
-              ),
-            ],
+          Text(
+            amount,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: color,
+            ),
           ),
         ],
       ),
@@ -513,33 +534,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBottomNavBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavBarItem(0, Icons.home),
-          _buildNavBarItem(1, Icons.pie_chart),
-          _buildNavBarItem(2, Icons.sync),
-          _buildNavBarItem(3, Icons.layers),
-          _buildNavBarItem(4, Icons.person),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavBarItem(int index, IconData icon) {
-    final isSelected = _selectedIndex == index;
-    return InkWell(
-      onTap: () => _onItemTapped(index),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFFA14E) : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: isSelected ? Colors.black : Colors.grey),
-      ),
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      selectedItemColor: const Color(0xFFFFA14E),
+      unselectedItemColor: Colors.black54,
+      backgroundColor: Colors.white,
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
+        BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      ],
     );
   }
 }

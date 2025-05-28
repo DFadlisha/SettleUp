@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'register.dart';
-import 'home.dart';
+import '../pages/home.dart';
 import 'forget_password.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,7 +25,6 @@ class LoginPageState extends State<LoginPage> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-
       await Future.delayed(const Duration(seconds: 1));
 
       bool isAuthenticated = mockUsers.any(
@@ -35,7 +34,6 @@ class LoginPageState extends State<LoginPage> {
       );
 
       setState(() => _isLoading = false);
-
       if (!mounted) return;
 
       if (isAuthenticated) {
@@ -85,9 +83,7 @@ class LoginPageState extends State<LoginPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
-                    } else if (!RegExp(
-                      r'^[^@]+@[^@]+\.[^@]+',
-                    ).hasMatch(value)) {
+                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                       return 'Enter a valid email address';
                     }
                     return null;
@@ -102,9 +98,7 @@ class LoginPageState extends State<LoginPage> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -127,9 +121,7 @@ class LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const ForgotPassword(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const ForgotPassword()),
                       );
                     },
                     child: const Text("Forgot Password?"),
@@ -144,15 +136,9 @@ class LoginPageState extends State<LoginPage> {
                       backgroundColor: const Color(0xFF27374D),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child:
-                        _isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : const Text(
-                              "Login",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("Login", style: TextStyle(color: Colors.white)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -186,9 +172,7 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
-                          ),
+                          MaterialPageRoute(builder: (context) => const RegisterPage()),
                         );
                       },
                       child: const Text("Sign Up"),
