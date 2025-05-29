@@ -1,7 +1,25 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'authentication/login.dart';
+import 'login.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyCEpS1yo7uKG7LDqRE0rMocusXK6paM1h4",
+        authDomain: "settleup-24203.firebaseapp.com",
+        projectId: "settleup-24203",
+        storageBucket: "settleup-24203.firebasestorage.app",
+        messagingSenderId: "1030394026845",
+        appId: "1:1030394026845:android:8a447cc3547216d432e6b4",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MyApp());
 }
 
