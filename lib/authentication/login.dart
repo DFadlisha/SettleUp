@@ -63,7 +63,34 @@ class LoginPageState extends State<LoginPage> {
             key: _formKey,
             child: Column(
               children: [
-                const Icon(Icons.lock, size: 100),
+                // Option 1: Simple logo with fixed size
+                Container(
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(60),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha((0.1 * 255).toInt()),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: Image.asset(
+                    'images/SettleUp_logo.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback to icon if image fails to load
+                        return const Icon(Icons.lock, size: 100);
+                      },
+                    ),
+                  ),
+                ),
+                
+          
                 const SizedBox(height: 20),
                 const Text(
                   "LOGIN",
