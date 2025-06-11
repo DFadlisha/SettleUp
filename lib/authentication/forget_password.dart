@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -11,6 +12,74 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  bool _isLoading = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _sendPasswordResetEmail() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+
+      try {
+        await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+
+        if (!mounted) return;
+
+        // Show success dialog
+        _showResetEmailSentDialog();
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+
+        String errorMessage;
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found with this email address.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'The email address is invalid.';
+        } else {
+          errorMessage = 'An error occurred. Please try again.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An unexpected error occurred.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
+  }
+
+  void _showResetEmailSentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Reset Email Sent'),
+          content: Text(
+            'A password reset link has been sent to ${_emailController.text.trim()}. '
+            'Please check your email and follow the instructions.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Return to previous screen
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +101,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'Enter your email address and we’ll send you a link to reset your password.',
+                'Enter your email address and we\'ll send you a link to reset your password.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -45,7 +114,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     labelText: 'Email',
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !value.contains('@')) {
                       return 'Please enter a valid email address';
                     }
                     return null;
@@ -54,15 +125,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NewPasswordPage()),
-                    );
-                  }
-                },
-                child: const Text('Submit'),
+                onPressed: _isLoading ? null : _sendPasswordResetEmail,
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Submit'),
               ),
               const SizedBox(height: 20),
               _signUpButton(context),
@@ -97,7 +164,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 }
 
 class NewPasswordPage extends StatefulWidget {
-  const NewPasswordPage({super.key});
+  final String? email;
+  final String? code;
+
+  const NewPasswordPage({super.key, this.email, this.code});
 
   @override
   State<NewPasswordPage> createState() => _NewPasswordPageState();
@@ -106,12 +176,69 @@ class NewPasswordPage extends StatefulWidget {
 class _NewPasswordPageState extends State<NewPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  bool _isLoading = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _updatePassword() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password updated successfully!')),
-    );
+  Future<void> _updatePassword() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+
+      try {
+        // Get the current user
+        User? user = _auth.currentUser;
+
+        if (user == null && widget.email != null) {
+          // If user isn't logged in but we have their email (from password reset)
+          // Note: In Firebase, you typically don't need the reset code to change password
+          // The reset link handles authentication
+          throw FirebaseAuthException(
+            code: 'no-current-user',
+            message: 'No authenticated user found',
+          );
+        }
+
+        // Update password
+        await user?.updatePassword(_newPasswordController.text.trim());
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password updated successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to login or home page
+        Navigator.popUntil(context, (route) => route.isFirst);
+      } on FirebaseAuthException catch (e) {
+        String errorMessage;
+        if (e.code == 'weak-password') {
+          errorMessage = 'The password is too weak.';
+        } else if (e.code == 'requires-recent-login') {
+          errorMessage = 'This operation requires recent authentication.';
+        } else {
+          errorMessage = 'Failed to update password. Please try again.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An unexpected error occurred.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
   }
 
   @override
@@ -176,12 +303,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _updatePassword();
-                  }
-                },
-                child: const Text('Update Password'),
+                onPressed: _isLoading ? null : _updatePassword,
+                child:
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Update Password'),
               ),
               const SizedBox(height: 20),
               _signUpButton(context),
