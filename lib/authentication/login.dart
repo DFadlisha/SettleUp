@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
 import '../pages/home.dart';
 import 'forget_password.dart';
@@ -17,34 +18,53 @@ class LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  final List<Map<String, String>> mockUsers = [
-    {"email": "user1@example.com", "password": "password123"},
-    {"email": "user2@example.com", "password": "mypassword"},
-  ];
+  // Firebase Auth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      await Future.delayed(const Duration(seconds: 1));
 
-      bool isAuthenticated = mockUsers.any(
-        (user) =>
-            user["email"] == _emailController.text &&
-            user["password"] == _passwordController.text,
-      );
+      try {
+        // Firebase authentication
+        //UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        await _auth.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      setState(() => _isLoading = false);
-      if (!mounted) return;
+        if (!mounted) return;
 
-      if (isAuthenticated) {
+        // Navigate to home page after successful login
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePage()),
         );
-      } else {
+      } on FirebaseAuthException catch (e) {
+        setState(() => _isLoading = false);
+        if (!mounted) return;
+
+        String errorMessage;
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found with this email.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Incorrect password.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'The email address is invalid.';
+        } else {
+          errorMessage = 'Login failed. Please try again.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        setState(() => _isLoading = false);
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Invalid email or password"),
+            content: Text('An unexpected error occurred.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -63,7 +83,7 @@ class LoginPageState extends State<LoginPage> {
             key: _formKey,
             child: Column(
               children: [
-                // Option 1: Simple logo with fixed size
+                // Your existing UI components remain the same
                 Container(
                   height: 120,
                   width: 120,
@@ -80,17 +100,15 @@ class LoginPageState extends State<LoginPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(60),
                     child: Image.asset(
-                    'images/SettleUp_logo.png',
+                      'images/SettleUp_logo.png',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback to icon if image fails to load
                         return const Icon(Icons.lock, size: 100);
                       },
                     ),
                   ),
                 ),
-                
-          
+
                 const SizedBox(height: 20),
                 const Text(
                   "LOGIN",
@@ -110,7 +128,9 @@ class LoginPageState extends State<LoginPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
-                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    } else if (!RegExp(
+                      r'^[^@]+@[^@]+\.[^@]+',
+                    ).hasMatch(value)) {
                       return 'Enter a valid email address';
                     }
                     return null;
@@ -125,7 +145,9 @@ class LoginPageState extends State<LoginPage> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -148,7 +170,9 @@ class LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ForgotPassword()),
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPassword(),
+                        ),
                       );
                     },
                     child: const Text("Forgot Password?"),
@@ -163,9 +187,15 @@ class LoginPageState extends State<LoginPage> {
                       backgroundColor: const Color(0xFF27374D),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Login", style: TextStyle(color: Colors.white)),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              "Login",
+                              style: TextStyle(color: Colors.white),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -199,7 +229,9 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterPage(),
+                          ),
                         );
                       },
                       child: const Text("Sign Up"),
