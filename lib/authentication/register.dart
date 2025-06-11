@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -18,6 +19,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isLoading = false;
   DateTime? _selectedDate;
 
   Future<void> _selectDate(BuildContext context) async {
@@ -31,16 +35,11 @@ class _RegisterPageState extends State<RegisterPage> {
     if (pickedDate != null) {
       setState(() {
         _selectedDate = pickedDate;
-        _dateOfBirthController.text =
-            DateFormat('dd / MM / yyyy').format(_selectedDate!);
+        _dateOfBirthController.text = DateFormat(
+          'dd / MM / yyyy',
+        ).format(_selectedDate!);
       });
     }
-  }
-
-  Future<void> _saveUserInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('fullName', _fullNameController.text.trim());
-    await prefs.setString('email', _emailController.text.trim());
   }
 
   bool _isValidPhoneNumber(String phone) {
@@ -70,54 +69,86 @@ class _RegisterPageState extends State<RegisterPage> {
     return hasDigits && hasUppercase && hasLowercase && hasMinLength;
   }
 
-  void _signUp() async {
+  Future<void> _signUp() async {
     if (_fullNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _mobileNumberController.text.isEmpty ||
         _dateOfBirthController.text.isEmpty ||
         _passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      _showErrorSnackbar('Please fill all fields');
       return;
     }
 
     if (!_isValidPhoneNumber(_mobileNumberController.text.trim())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
-      );
+      _showErrorSnackbar('Please enter a valid phone number');
       return;
     }
 
     if (!_isValidDate(_dateOfBirthController.text.trim())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid date of birth')),
-      );
+      _showErrorSnackbar('Please enter a valid date of birth');
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      _showErrorSnackbar('Passwords do not match');
       return;
     }
 
     if (!_isPasswordStrong(_passwordController.text.trim())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-              'Password must be at least 8 characters long, include uppercase, lowercase letters, and numbers.'),
-        ),
+      _showErrorSnackbar(
+        'Password must be at least 8 characters long, include uppercase, lowercase letters, and numbers.',
       );
       return;
     }
 
-    // Save user info locally
-    await _saveUserInfo();
+    setState(() => _isLoading = true);
 
-    _showRegistrationSuccessDialog();
+    try {
+      // 1. Create user in Firebase Authentication
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      // 2. Save additional user data to Firestore
+      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+        'fullName': _fullNameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'mobileNumber': _mobileNumberController.text.trim(),
+        'dateOfBirth': _dateOfBirthController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // 3. Send email verification (optional)
+      await userCredential.user?.sendEmailVerification();
+
+      if (!mounted) return;
+      _showRegistrationSuccessDialog();
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Registration failed. Please try again.';
+      if (e.code == 'weak-password') {
+        errorMessage = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        errorMessage = 'An account already exists for that email.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'The email address is invalid.';
+      }
+      _showErrorSnackbar(errorMessage);
+    } catch (e) {
+      _showErrorSnackbar('An unexpected error occurred. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   void _showRegistrationSuccessDialog() {
@@ -126,12 +157,14 @@ class _RegisterPageState extends State<RegisterPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Registration Successful'),
-          content: const Text('Your account has been created successfully.'),
+          content: const Text(
+            'Your account has been created successfully. Please check your email for verification.',
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.pop(context); // Close dialog
+                Navigator.pop(context); // Return to previous screen
               },
               child: const Text('OK'),
             ),
@@ -144,9 +177,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
+      appBar: AppBar(title: const Text('Register')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -188,8 +219,11 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: _signUp,
-              child: const Text('Sign Up'),
+              onPressed: _isLoading ? null : _signUp,
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Sign Up'),
             ),
           ],
         ),
