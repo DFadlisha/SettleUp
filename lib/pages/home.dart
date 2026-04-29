@@ -4,6 +4,8 @@ import 'profile.dart';
 import 'group_members.dart';
 import 'settlement_payment.dart';
 import 'split_calculation.dart';
+import 'ai_assistant.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -60,9 +62,10 @@ class _HomePageState extends State<HomePage> {
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const GroupMembersPage()),
+          MaterialPageRoute(builder: (context) => const AIAssistantPage()),
         );
         break;
+
       case 4:
         Navigator.pushReplacement(
           context,
@@ -545,7 +548,8 @@ class _HomePageState extends State<HomePage> {
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
         BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: 'AI AIssistant'),
+
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
     );

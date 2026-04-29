@@ -201,21 +201,28 @@ class LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 const Text("Or continue with"),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.facebook),
-                      color: Colors.blue,
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      // Handle Google Sign-In
+                    },
+                    icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 30),
+                    label: const Text(
+                      "Sign in with Google",
+                      style: TextStyle(color: Color(0xFF27374D), fontWeight: FontWeight.bold),
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.g_mobiledata),
-                      color: Colors.red,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: Colors.grey),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ],
+                  ),
                 ),
+
                 const SizedBox(height: 20),
                 const Text("Use fingerprint to login"),
                 const SizedBox(height: 10),
