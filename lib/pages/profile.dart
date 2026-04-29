@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'home.dart';
+import 'group_members.dart';
+import 'settlement_payment.dart';
+import 'split_calculation.dart';
+import 'ai_assistant.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -115,7 +120,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(context, 4),
     );
   }
 
@@ -165,35 +170,57 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Icon(Icons.home_outlined, color: Colors.grey[600], size: 28),
-          Icon(Icons.bar_chart_outlined, color: Colors.grey[600], size: 28),
-          Icon(Icons.swap_horiz_outlined, color: Colors.grey[600], size: 28),
-          Icon(Icons.layers_outlined, color: Colors.grey[600], size: 28),
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.orange,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(Icons.person, color: Colors.white, size: 28),
-          ),
-        ],
-      ),
+  void _onItemTapped(BuildContext context, int index) {
+
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SplitCalculationPage()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SettlementPaymentPage()),
+        );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AIAssistantPage()),
+        );
+        break;
+      case 4:
+        // Already on Profile
+        break;
+    }
+  }
+
+  Widget _buildBottomNavigationBar(BuildContext context, int selectedIndex) {
+    return BottomNavigationBar(
+      currentIndex: selectedIndex,
+      onTap: (index) => _onItemTapped(context, index),
+      selectedItemColor: const Color(0xFFFFA14E),
+      unselectedItemColor: Colors.black54,
+      backgroundColor: Colors.white,
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
+        BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
+        BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: 'AI Assistant'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      ],
     );
   }
+
 }
 
 class EditProfileScreen extends StatefulWidget {
@@ -365,11 +392,59 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 4,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SplitCalculationPage()),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const SettlementPaymentPage()),
+              );
+              break;
+            case 3:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const AIAssistantPage()),
+              );
+              break;
+            case 4:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+              break;
+          }
+        },
+        selectedItemColor: const Color(0xFFFFA14E),
+        unselectedItemColor: Colors.black54,
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
+          BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: 'AI Assistant'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
     );
   }
 
   Widget _buildInputField(String label, TextEditingController controller) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

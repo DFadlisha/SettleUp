@@ -548,7 +548,8 @@ class _HomePageState extends State<HomePage> {
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Analytics'),
         BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: 'AI AIssistant'),
+        BottomNavigationBarItem(icon: Icon(Icons.smart_toy_outlined), label: 'AI Assistant'),
+
 
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
