@@ -7,8 +7,9 @@ plugins {
 
 android {
     namespace = "com.example.settleup"
-    compileSdk = 34  // Update to the latest stable SDK version
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 35  // Updated to 35 as per recommendation
+    ndkVersion = "27.0.12077973" // Updated as required by plugins
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -22,7 +23,8 @@ android {
     defaultConfig {
         applicationId = "com.example.settleup"
         minSdk = 23  // Changed from minSdkVersion(23)
-        targetSdk = 34  // Changed from targetSdkVersion(34)
+        targetSdk = 35  // Updated to 35
+
         versionCode = 1  // Changed from versionCode(1)
         versionName = "1.0"  // Changed from versionName("1.0")
     }
@@ -35,13 +37,8 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))  // Firebase BoM
-
-    // Firebase dependencies (add more as needed)
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")  // Firebase Authentication
-    implementation("com.google.firebase:firebase-firestore")  // Firestore (if needed)
 }
+
 
 flutter {
     source = "../.."
